@@ -1,0 +1,23 @@
+<svg><defs>
+<font horiz-adv-x="1000">
+  <font-face 
+    font-family="Untitled1"
+    font-weight="400"
+    font-stretch="normal"
+    units-per-em="1000"
+    ascent="880"
+    descent="-120"
+    bbox="0 0 1000 1000"
+    underline-thickness="50"
+    underline-position="-100"
+  />
+<missing-glyph horiz-adv-x="1000" d="M500 300l150 -300l-300 0zM650 760l-150 -300l-150 300l300 0zM730 760l0 -760l-190 380zM270 760l190 -380l-190 -380l0 760zM200 830l0 -900l600 0l0 900l-600 0z"/>
+<glyph unicode="0" horiz-adv-x="1000" d="m-100,-100l100,0L0,100C0,200 200,0 200,200 m100,200 c 300,0 0,300 300,300 Zm-150,-150 c 200,100 -100,0 0,100 l-300,-200  l100,200 z"/>
+<glyph unicode="M" horiz-adv-x="1000" d="M434,633l-154,-438l570,-99l-82,429C572.04,241.14 542.77,587.31 434,633z"/>
+<glyph unicode="A" horiz-adv-x="1000" d="M708,668C337.85,648.29 257.03,369.07 234,38l518,103z"/>
+<glyph unicode="C" horiz-adv-x="1000" d="M708,668C337.85,648.29 257.03,369.07 234,38l518,103z"/>
+<glyph unicode="N" horiz-adv-x="1000" d="M50,0l900,0l0,533l-900,0 z M100,50l0,433l800,0l0,-433z"/>
+<glyph unicode="S" horiz-adv-x="500"/>
+<glyph unicode="D" horiz-adv-x="1000"/>
+</font>
+</defs></svg>

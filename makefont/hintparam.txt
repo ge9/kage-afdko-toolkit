@@ -1,0 +1,11 @@
+System
+/BlueValues [-250 -250 1100 1100] def
+/StdHW [100] def
+/StdVW [100] def
+
+Ideographs
+/BlueValues [-120 -120 880 880] def
+/StdHW [21] def
+/StdVW [63] def
+/StemSnapH [13 21 31 42 52 63 74] def
+/StemSnapV [31 42 52 63 74] def

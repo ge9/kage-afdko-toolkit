@@ -1,0 +1,8 @@
+*.csv
+dump_all_versions.txt
+dump_newest_only.txt
+dump.tar.gz
+gwv_result.json.bak
+*.sqlite3
+*.sqlite3-journal
+*.json

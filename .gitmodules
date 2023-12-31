@@ -1,0 +1,9 @@
+[submodule "perl-scripts"] 
+	path = perl-scripts 
+	url = https://github.com/adobe-type-tools/perl-scripts.git
+[submodule "js/kage-engine-npm"]
+	path = js/kage-engine-npm
+	url = https://github.com/ge9/kage-engine-npm
+[submodule "gwv-view"]
+	path = gwv-view
+	url = https://github.com/ge9/gwv-view

@@ -1,0 +1,115 @@
+VS_dir=../VS
+AJ1_dir=../AJ1
+config_dir=../config
+GlyphWiki_dir=../glyphwiki
+include $(config_dir)/config.mk
+NS := ucs-all ucs-main ucs-ivsbase ucs-svsbase ucs-mj ucs-hanyo ucs-SHSans aj1kanji ivs-other irg2021 rgnsource
+NAMES := $(addsuffix .name,$(NS))
+BODIES := $(addsuffix .body,$(NAMES))
+#ここで!を付けておくと存在しなかった場合に-*v（仮想地域ソース）が参照される。buhin-subst.jsも参照。
+RGN_SOURCES := j! g! h! t! k! kp! v! m! u us i ja js
+all:all.parts-list 99-extB-F.glyphs kanjisample.glyphs #bugs.glyphs
+
+%.parts-list: %.glyphs
+	node ../js/make-cache.js $^ $@
+kanjisample.glyphs:70-ucs-all.glyphs
+	grep -f $(config_dir)/kanjisample.grep $^ > $@
+bugs.glyphs:70-ucs-all.glyphs
+	grep -f $(config_dir)/bugs.grep $^ > $@
+
+#コメントアウトされたものは、将来的にはこのように使うだろうと予想される例
+#今は重くなりすぎるので、実体の列挙のみ行い、割り当てポイントは無視
+irg2021.list:irg2021.name.body
+	cat $^ | grep -v "****error****" | sed "s/$$/\tXXXX/" > $@
+#irg2021.list:irg2021.name.body irg2021.name
+#	paste $^ | grep -v "****error****" > $@
+irg2021.name:
+	seq 1 4952 | xargs printf "%05d\n" | sed "s/^/irg2021-/" > $@
+rgnsource.list:rgnsource.name.body
+	cat $^ | sort | uniq | sed 's/$$/\tRGN/' > $@
+#rgnsource.list:rgnsource.name.body rgnsource.name
+#	paste $^ > $@
+rgnsource.name:ucs-all.ids
+# 空にする
+# support CRLF by `\r?$$`
+	cat /dev/null > $@
+	list='$(RGN_SOURCES)'; for rgnsrc in $$list; do \
+	cat ucs-all.name | sed "s/\r\{0,1\}$$/!$$rgnsrc/" >> $@ || exit 1;\
+	done
+
+# 各.nameから個別に生成しても構わないが、一度に生成したほうが効率がいい
+$(BODIES): $(NAMES)
+	node ../js/make-body.js $^
+ucs-all.ids:
+	python make-ucs-list.py $(config_dir)/ucs-all.range > $@
+ucs-main.ids:
+	python make-ucs-list.py $(config_dir)/ucs-main.range > $@
+ucs-svsbase.ids:
+	cat ../VS/StandardizedVariants.txt | grep "CJK COMPATIBILITY IDEOGRAPH" | cut -f 1 -d " " > $@
+ucs-ivsbase.ids:
+	cat ../VS/IVD_Sequences.txt | grep -v ^# | cut -f 1 -d " " > $@
+#現在使われていない。（空ファイル）
+ucs-mj.ids:
+	cat ../MJ/MJ.list | sed -n "s/^U+//p" > $@
+ucs-hanyo.ids:
+	cp ../hanyo/hd.list $@
+ucs-SHSans.ids:
+	cat ../SHS-JP/JP.SHSans.sip ../SHS-JP/JP.SHSans.tip | cut -f 1 -d " " | sed "s/^000//" > $@
+#ucs-meiryo.ids:
+#	(ext-fontsの中にスクリプトあり)
+%.name:%.ids
+	cat $^ | tr '[:upper:]' '[:lower:]' | sed 's/^/u/'  | sed 's/$$/$(PREFER_SOURCE)/' > $@
+%.ucslist:%.name.body %.ids
+#更新されないことがあるのでtouchする
+	touch $@
+	paste $^ > $@
+#make glyphs files
+#互換漢字補助は除く
+99-extB-F.glyphs:70-ucs-all.glyphs
+	cat $^ | grep -E "<2[0-9A-E]...>" > $@
+all.glyphs:80-irg2021.glyphs rgnsource.list
+	python add-glyph.py $^ > $@
+80-irg2021.glyphs:70-ucs-all.glyphs irg2021.list
+	python add-glyph.py $^ > $@
+70-ucs-all.glyphs:60-ucs-hanyo.glyphs ucs-all.ucslist
+	python add-glyph.py $^ > $@
+60-ucs-hanyo.glyphs:55-ucs-mj.glyphs ucs-hanyo.ucslist
+	python add-glyph.py $^ > $@
+55-ucs-mj.glyphs:45-ucs-SHSans.glyphs ucs-mj.ucslist
+	python add-glyph.py $^ > $@
+45-ucs-SHSans.glyphs:40-ucs-ivsbase.glyphs ucs-SHSans.ucslist
+	python add-glyph.py $^ > $@
+40-ucs-ivsbase.glyphs:35-ucs-svsbase.glyphs ucs-ivsbase.ucslist
+	python add-glyph.py $^ > $@
+35-ucs-svsbase.glyphs:33-add-svs.glyphs ucs-svsbase.ucslist
+	python add-glyph.py $^ > $@
+#add SVS sequence here
+33-add-svs.glyphs:30-ucs-main.glyphs $(VS_dir)/StandardizedVariants.txt
+	python add-svs.py $^ > $@
+30-ucs-main.glyphs:20-other-ivs.glyphs ucs-main.ucslist
+	python add-glyph.py $^ > $@
+20-other-ivs.glyphs:05-aj1kanji.glyphs ivs-other.list
+	python add-glyph.py $^ > $@
+05-aj1kanji.glyphs:aj1kanji.list
+	python make-aj1.py aj1kanji.list $(VS_dir)/Adobe-Japan1_sequences.txt > $@
+
+#IVS重複もあるため、実体として各CIDのaj1-XXXXXを使う方がシンプルである。
+aj1kanji.list:aj1kanji.name.body
+	cat aj1kanji.name | sed 's/^aj1-0*//' | paste $^ - > $@
+#唯一IVSが割り当てられているAJ1の非漢字であるCID+12869（ルビ用の「注」）を追加
+aj1kanji.name:
+	cat ../AJ1/kanji-name-list > $@
+	echo aj1-12869 >> $@
+ivs-other.list:ivs-other.name.body ivs-other.ids
+	paste ivs-other.name.body ivs-other.ids > $@
+#"uniq" required for shared IVSes
+ivs-other.ids:
+	cat $(VS_dir)/IVD_Sequences.txt | grep -v '#' | grep -v 'Adobe-Japan1;' | cut -f 1 -d ";" | uniq > $@
+ivs-other.name:ivs-other.ids
+	cat $^ | sed 's/^/u/' | sed 's/ /-u/' | tr '[:upper:]' '[:lower:]' > ivs-other.name
+clean:
+	rm -f *.glyphs *.name *.list *.body *.ids *.parts-list aj1kanji.cids
+#cat $(VS_dir)/IVD_Sequences.txt | grep -v '#' | grep -v 'Adobe-Japan1;' | cut -f 1 -d ";" | sed 's/^/u/' | sed 's/ /-u/' | tr '[:upper:]' '[:lower:]' > $@
+#TEST
+only-ucs.glyphs:empty ucs-main.ucslist
+	python add-glyph.py $^ > $@

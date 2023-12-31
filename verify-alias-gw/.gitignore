@@ -1,0 +1,10 @@
+aj1-cmap
+aj1-has-ue0101
+aj1-cmap.diff.all
+ivs-aj1-not-in-cmap
+ivs-aj1.dupl
+kanji-name-list
+*.name
+*.diff
+*.gw
+*.body

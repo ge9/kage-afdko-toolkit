@@ -1,0 +1,66 @@
+table head {
+  FontRevision     %NZM_FONT_VER;
+} head;
+
+table hhea {
+  CaretOffset          0;
+  Ascender           880;
+  Descender         -120;
+  LineGap           1000;
+} hhea;
+
+table OS/2 {
+  FSType               0;
+  Panose               2   # Latin, Text
+                      11   # Normal Sans
+                       4   # Thin
+                       9   # Monospaced
+             0 0 0 0 0 0;  # Any
+  UnicodeRange
+  0 1 2 5 6 7 9
+ 31
+  32 33 34 35 36 37 38 39
+        42 43 44 45 46 47
+  48 
+                      49   # Hiragana
+                      50   # Katakana
+    54 55 57
+                     59   # CJK Unified Ideographs
+                      61 # CJK Strokes, CJK Compatibility Ideographs (Supplement)
+      65 68
+                      91   # Variation Selectors
+  ;
+  CodePageRange
+                    1252   # Latin 1
+                    1250   # Latin 2
+                     932   # JIS/Japan
+                     936   # Chinese: Simplified chars—PRC and Singapore
+                     949   # Korean Wansung
+                     950	 # Chinese: Traditional chars—Taiwan and Hong Kong
+                    1361   # Korean Johab
+  ;
+  TypoAscender       880;
+  TypoDescender     -120;
+  TypoLineGap       1000;
+  winAscent         1000;
+  winDescent         100;
+  XHeight              0;
+  CapHeight            0;
+  WeightClass        %NZM_WEIGHT_NUM;
+  WidthClass           5;  # Full width
+  Vendor          "YHVH";
+} OS/2;
+
+table vhea {
+  VertTypoAscender   500;
+  VertTypoDescender -500;
+  VertTypoLineGap   1000;
+} vhea;
+
+feature vrt2 {
+  sub \1 by \%NZM_VSP_CID;
+} vrt2;
+
+feature vert {
+  sub \1 by \%NZM_VSP_CID;
+} vert;

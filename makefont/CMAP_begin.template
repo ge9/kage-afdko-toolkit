@@ -1,0 +1,38 @@
+%!PS-Adobe-3.0 Resource-CMap
+%%DocumentNeededResources: ProcSet (CIDInit)
+%%IncludeResource: ProcSet (CIDInit)
+%%BeginResource: CMap (NazoMinCMAP-UTF32-H)
+%%Title: (NazoMinCMAP-UTF32-H Adobe Identity 0)
+%%Version: 2.004
+%%EndComments
+
+/CIDInit /ProcSet findresource begin
+
+12 dict begin
+
+begincmap
+
+/CIDSystemInfo 3 dict dup begin
+  /Registry (Adobe) def
+  /Ordering (Identity) def
+  /Supplement 0 def
+end def
+
+/CMapName /NazoMinCMAP-UTF32-H def
+/CMapVersion 2.004 def
+/CMapType 1 def
+
+/WMode 0 def
+
+1 begincodespacerange
+  <00000000> <0010FFFF>
+endcodespacerange
+
+1 beginnotdefrange
+<00000000> <0000001f> 1
+endnotdefrange
+
+2 begincidchar
+<00000020> 1
+<00003000> %NZM_DSP_CID
+endcidchar

@@ -1,0 +1,6 @@
+js/node_modules
+config/ext/*
+/perl-scripts/*
+*.log
+nohup.out
+*.DS_Store

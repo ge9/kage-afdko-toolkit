@@ -1,0 +1,5 @@
+Open($argv[1])
+SelectAll()
+AutoHint()
+AutoInstr()
+Generate($argv[1])

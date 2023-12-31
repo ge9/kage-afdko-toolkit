@@ -1,0 +1,9 @@
+FontName       (NazoMin%NZM_CHARSET_PS_NAME-%NZM_WEIGHT_STR)
+FullName       (NazonoMincho%NZM_CHARSET_NAME %NZM_WEIGHT_STR)
+FamilyName     (NazonoMincho%NZM_CHARSET_NAME)
+Weight         (%NZM_WEIGHT_STR)
+version        (%NZM_FONT_VER)
+Registry       (Adobe)
+Ordering       (Identity)
+Supplement     0
+AdobeCopyright (Public Domain)

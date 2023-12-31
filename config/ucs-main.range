@@ -1,0 +1,23 @@
+#メインで使用するUCS（花園明朝A用？）
+#CJK Unified Ideographs
+4e00-9fff
+#CJK Compatibility Ideographs(1)
+f900-fa6d
+#CJK Compatibility Ideographs(2)
+fa70-fad9
+#CJK Compatibility Ideographs Supplement
+2f800-2fa1d
+#Kangxi Radicals
+2f00-2fd5
+#CJK Radicals Supplement(1)
+2e80-2e99
+#CJK Radicals Supplement(2)
+2e9b-2ef3
+#CJK Strokes
+31c0-31e3
+#Ext A
+3400-4dbf
+#Ext G
+30000-3134a
+#Ext H
+31350-323af

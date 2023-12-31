@@ -1,0 +1,11 @@
+*.otf
+*.ttf
+*.cff
+*.raw
+*.pfa
+*-UTF*-*
+*.out.*
+*.temp
+*.final
+/unused
+/backup

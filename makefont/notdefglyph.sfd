@@ -1,0 +1,82 @@
+SplineFontDB: 3.2
+FontName: Untitled1
+FullName: Untitled1
+FamilyName: Untitled1
+Weight: Regular
+Copyright: Copyright (c) 2023, kensho
+UComments: "2023-1-13: Created with FontForge (http://fontforge.org)"
+Version: 001.000
+ItalicAngle: 0
+UnderlinePosition: -100
+UnderlineWidth: 50
+Ascent: 880
+Descent: 120
+InvalidEm: 0
+LayerCount: 2
+Layer: 0 0 "+gMyXYgAA" 1
+Layer: 1 0 "+Uk2XYgAA" 0
+XUID: [1021 502 -902874461 27618]
+OS2Version: 0
+OS2_WeightWidthSlopeOnly: 0
+OS2_UseTypoMetrics: 1
+CreationTime: 1673589305
+ModificationTime: 1673590596
+OS2TypoAscent: 0
+OS2TypoAOffset: 1
+OS2TypoDescent: 0
+OS2TypoDOffset: 1
+OS2TypoLinegap: 0
+OS2WinAscent: 0
+OS2WinAOffset: 1
+OS2WinDescent: 0
+OS2WinDOffset: 1
+HheadAscent: 0
+HheadAOffset: 1
+HheadDescent: 0
+HheadDOffset: 1
+OS2Vendor: 'PfEd'
+MarkAttachClasses: 1
+DEI: 91125
+Encoding: ISO8859-1
+UnicodeInterp: none
+NameList: AGL For New Fonts
+DisplaySize: -48
+AntiAlias: 1
+FitToEm: 0
+WinInfo: 0 36 11
+BeginPrivate: 0
+EndPrivate
+BeginChars: 256 1
+
+StartChar: quotesingle
+Encoding: 39 39 0
+Width: 1000
+Flags: H
+LayerCount: 2
+Fore
+SplineSet
+500 300 m 25
+ 650 0 l 25
+ 350 0 l 25
+ 500 300 l 25
+650 760 m 25
+ 500 460 l 25
+ 350 760 l 25
+ 650 760 l 25
+730 760 m 25
+ 730 0 l 25
+ 540 380 l 25
+ 730 760 l 25
+270 760 m 25
+ 460 380 l 25
+ 270 0 l 25
+ 270 760 l 25
+200 830 m 25
+ 200 -70 l 25
+ 800 -70 l 25
+ 800 830 l 25
+ 200 830 l 25
+EndSplineSet
+EndChar
+EndChars
+EndSplineFont

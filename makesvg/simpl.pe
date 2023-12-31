@@ -1,0 +1,7 @@
+Open($argv[1])
+# Select(1519,1519)
+# SelectInvert()
+# Clear()
+SelectAll()
+Simplify(128+32+8, 1.1)
+Generate($argv[2])

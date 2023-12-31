@@ -1,0 +1,37 @@
+#Unicode 15.1.0対応
+#CJK Unified Ideographs
+4e00-9fff
+#CJK Compatibility Ideographs(1)
+f900-fa6d
+#CJK Compatibility Ideographs(2)
+fa70-fad9
+#CJK Compatibility Ideographs Supplement
+2f800-2fa1d
+#Kangxi Radicals
+2f00-2fd5
+#CJK Radicals Supplement(1)
+2e80-2e99
+#CJK Radicals Supplement(2)
+2e9b-2ef3
+#CJK Strokes
+31c0-31e3
+#Ext A
+3400-4dbf
+#Ext B
+20000-2a6df
+#Ext C
+2a700-2b738
+#Ext D
+2b740-2b81d
+#Ext E
+2b820-2cea1
+#Ext F
+2ceb0-2ebe0
+#Ext G
+30000-3134a
+#Ext C (addition in Unicode 15.0)
+2b739-2b739
+#Ext H
+31350-323af
+#Ext I
+2ebf0-2ee5d
