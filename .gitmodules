@@ -1,5 +1,5 @@
-[submodule "perl-scripts"] 
-	path = perl-scripts 
+[submodule "perl-scripts"]
+	path = perl-scripts
 	url = https://github.com/adobe-type-tools/perl-scripts.git
 [submodule "js/kage-engine-npm"]
 	path = js/kage-engine-npm
