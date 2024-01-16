@@ -1,6 +1,5 @@
-
-var fs = require("fs");
-const readline = require('readline');
+import fs from "fs";
+import readline from "readline";
 //readstreamを作成
 const rs = fs.createReadStream(process.argv[2]);
 //インターフェースの設定
@@ -10,13 +9,13 @@ const rl = readline.createInterface({
 });
 //1行ずつ読み込む設定
 //console.log(check_8yane("2:0:7:69:105:51:137:14:160$1:0:0:88:111:147:111$2:7:0:136:111:159:142:179:150$1:0:2:56:137:140:137$2:22:4:140:137:139:161:128:179$2:32:7:95:137:84:176:29:187"))
-res1=[]
-res2=[]
+let res1=[]
+let res2=[]
 rl.on('line', (lineString) => {
-    m = lineString.match(/^ ([^ ]*) *\|.*\| (.*)$/)
+    let m = lineString.match(/^([^ ]*)\|.*\|(.*)$/)
     //console.log(m)
     if (!m) return;
-    nam = m[1].replace("\\\@", "\@")
+    const nam = m[1].replace("\\\@", "\@")
     //if (check_8yane(m[2])) res2.push(nam)
     //if (check_shorth(m[2])) res2.push(nam)
     //if (check_sanzui(m[2])) res2.push(nam)
@@ -35,15 +34,15 @@ rl.on('close', () => {
 });
 
 function check_8yane(glyphdata){
-  data = glyphdata.split("$")
+  const data = glyphdata.split("$")
   //下1桁で判定することで手動調整に対応
-  open_end=data.filter((s)=> {
+  const open_end=data.filter((s)=> {
     if (!s.match(/^[0-9]*1:[0-9]+:[0-9]*0:/)) return false;
-    ss = s.split(":")
+    const ss = s.split(":")
     if ((ss[4]-ss[6])*(ss[4]-ss[6])>(ss[3]-ss[5])*(ss[3]-ss[5])) return false;//縦向き直線ならキャンセル
     return true;
   }).map((s)=>s.split(":"))
-  thin_begin=data.filter((s)=>{return s.match(/^2:([0-9]*0)?7:/)}).map((s)=>s.split(":"))
+  const thin_begin=data.filter((s)=>{return s.match(/^2:([0-9]*0)?7:/)}).map((s)=>s.split(":"))
   for (const o of open_end) {
     for (const t of thin_begin) {
       const dist = min_d2(t[3], t[4], o[5], o[6], o[5]-11, o[6])
@@ -56,16 +55,16 @@ function check_8yane(glyphdata){
 }
 
 function check_shorth(glyphdata){//「接続」用の短い横線
-  data = glyphdata.split("$")
+  const data = glyphdata.split("$")
   //下1桁で判定することで手動調整に対応
-  conn_end=data.filter((s)=> {
+  const conn_end=data.filter((s)=> {
     if (!s.match(/^[0-9]*1:[0-9]+:[0-9]*(2|7):/)) return false;
-    ss = s.split(":")
+    const ss = s.split(":")
     if ((ss[4]-ss[6])*(ss[4]-ss[6])>(ss[3]-ss[5])*(ss[3]-ss[5])) return false;//縦向き直線ならキャンセル
     if (2500<(ss[3]-ss[5])*(ss[3]-ss[5])) return false;//長さ50以上ならキャンセル
     return true;
   }).map((s)=>s.split(":"))
-  conn_curve=data.filter((s)=>{return s.match(/^(2|6):([0-9]*0)?32:/)}).map((s)=>s.split(":"))
+  const conn_curve=data.filter((s)=>{return s.match(/^(2|6):([0-9]*0)?32:/)}).map((s)=>s.split(":"))
   for (const o of conn_end) {
     for (const t of conn_curve) {
       const dist = min_d2(t[3], t[4], o[5], o[6], o[3], o[6])
@@ -78,11 +77,11 @@ function check_shorth(glyphdata){//「接続」用の短い横線
 }
 
 function check_sanzui(glyphdata){
-  data = glyphdata.split("$")
-  thin_stop_end=data.filter((s)=> {
+  const data = glyphdata.split("$")
+  const thin_stop_end=data.filter((s)=> {
     return s.match(/^(2|6):7:8:/)
   }).map((s)=>s.split(":"))
-  connect_sweep=data.filter((s)=>{return s.match(/^2:(12|32):7:/)}).map((s)=>s.split(":"))
+  const connect_sweep=data.filter((s)=>{return s.match(/^2:(12|32):7:/)}).map((s)=>s.split(":"))
 
   for (const t of thin_stop_end) {
     for (const c of connect_sweep) {
@@ -99,11 +98,11 @@ function check_sanzui(glyphdata){
 }
 
 function check_kemono(glyphdata){
-  data = glyphdata.split("$")
-  turn_left=data.filter((s)=> {
+  const data = glyphdata.split("$")
+  const turn_left=data.filter((s)=> {
     return s.match(/^(2|6):7:4:/)
   }).map((s)=>s.split(":"))
-  connect_sweep=data.filter((s)=>{return s.match(/^2:(12|32):7:/)}).map((s)=>s.split(":"))
+  const connect_sweep=data.filter((s)=>{return s.match(/^2:(12|32):7:/)}).map((s)=>s.split(":"))
 
   for (const t of turn_left) {
     for (const c of connect_sweep) {
@@ -125,12 +124,12 @@ function check_kemono(glyphdata){
 }
 
 function thin_connect(glyphdata){
-  data = glyphdata.split("$")
-  thin_begin=data.filter((s)=> {
+  const data = glyphdata.split("$")
+  const thin_begin=data.filter((s)=> {
     return s.match(/^(2|6):7:/)
   }).map((s)=>s.split(":"))
 
-  thin_end=data.filter((s)=>{return s.match(/^(2|6):[0-9]+:7:/)}).map((s)=>s.split(":"))
+  const thin_end=data.filter((s)=>{return s.match(/^(2|6):[0-9]+:7:/)}).map((s)=>s.split(":"))
 
   for (const b of thin_begin) {
     for (const e of thin_end) {
@@ -147,11 +146,11 @@ function thin_connect(glyphdata){
 
 
 function check_ninben(glyphdata){
-  data = glyphdata.split("$")
-  sweep_end_curve=data.filter((s)=> {
+  const data = glyphdata.split("$")
+  const sweep_end_curve=data.filter((s)=> {
     return s.match(/^2:[0-9]+:7:/)
   }).map((s)=>s.split(":"))
-  connect_straight=data.filter((s)=>{return s.match(/^1:([0-9]*0)?32:/)}).map((s)=>s.split(":"))
+  const connect_straight=data.filter((s)=>{return s.match(/^1:([0-9]*0)?32:/)}).map((s)=>s.split(":"))
 
   for (const t of sweep_end_curve) {
     var tan_of_curve = Math.abs(t[8]-t[4]) / Math.abs(t[7]-t[3])
@@ -170,14 +169,14 @@ function check_ninben(glyphdata){
 }
 
 function check_hcon(glyphdata){
-  data = glyphdata.split("$")
-  sweep_end_curve=data.filter((s)=> {
+  const data = glyphdata.split("$")
+  const sweep_end_curve=data.filter((s)=> {
     return s.match(/^2:[0-9]+:7:/)
   }).map((s)=>s.split(":"))
 
-  connect_h=data.filter((s)=> {
+  const connect_h=data.filter((s)=> {
     if (!s.match(/^[0-9]*1:[0-9]*(0|2):/)) return false;
-    ss = s.split(":")
+    const ss = s.split(":")
     if ((ss[4]-ss[6])*(ss[4]-ss[6])>(ss[3]-ss[5])*(ss[3]-ss[5])) return false;//縦向き直線ならキャンセル
     return true;
   }).map((s)=>s.split(":"))

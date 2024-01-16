@@ -20,9 +20,9 @@ bugs.glyphs:70-ucs-all.glyphs
 #コメントアウトされたものは、将来的にはこのように使うだろうと予想される例
 #今は重くなりすぎるので、実体の列挙のみ行い、割り当てポイントは無視
 irg2021.list:irg2021.name.body
-	cat $^ | grep -v "****error****" | sed "s/$$/\tXXXX/" > $@
+	cat $^ | $(GNU_GREP) -v "****error****" | sed "s/$$/\tXXXX/" > $@
 #irg2021.list:irg2021.name.body irg2021.name
-#	paste $^ | grep -v "****error****" > $@
+#	paste $^ | $(GNU_GREP) -v "****error****" > $@
 irg2021.name:
 	seq 1 4952 | xargs printf "%05d\n" | sed "s/^/irg2021-/" > $@
 rgnsource.list:rgnsource.name.body
