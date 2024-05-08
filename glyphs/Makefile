@@ -3,11 +3,12 @@ AJ1_dir=../AJ1
 config_dir=../config
 GlyphWiki_dir=../glyphwiki
 include $(config_dir)/config.mk
-NS := ucs-all ucs-main ucs-ivsbase ucs-svsbase ucs-mj ucs-hanyo ucs-SHSans aj1kanji ivs-other irg2021 rgnsource
+NS := ucs-all ucs-main ucs-ivsbase ucs-svsbase ucs-mj ucs-hanyo ucs-SHSans aj1kanji aj1kanji-new ivs-other irg2021 rgnsource
 NAMES := $(addsuffix .name,$(NS))
 BODIES := $(addsuffix .body,$(NAMES))
 #ここで!を付けておくと存在しなかった場合に-*v（仮想地域ソース）が参照される。buhin-subst.jsも参照。
-RGN_SOURCES := j! g! h! t! k! kp! v! m! u us i ja js
+#（網羅性という観点ではj, jvなどそれぞれ明示的に指定したほうがよい？（-jが誤って作成されていると-jvが無視される））
+RGN_SOURCES := g! t! j! k! v! h! kp! u m! s! uk us i ja js jn
 all:all.parts-list 99-extB-F.glyphs kanjisample.glyphs #bugs.glyphs
 
 %.parts-list: %.glyphs
@@ -26,7 +27,7 @@ irg2021.list:irg2021.name.body
 irg2021.name:
 	seq 1 4952 | xargs printf "%05d\n" | sed "s/^/irg2021-/" > $@
 rgnsource.list:rgnsource.name.body
-	cat $^ | sort | uniq | sed 's/$$/\tRGN/' > $@
+	cat rgnsource.name | sed 's/^/RGN:/' | paste $^ -> $@
 #rgnsource.list:rgnsource.name.body rgnsource.name
 #	paste $^ > $@
 rgnsource.name:ucs-all.ids
@@ -67,7 +68,9 @@ ucs-SHSans.ids:
 #互換漢字補助は除く
 99-extB-F.glyphs:70-ucs-all.glyphs
 	cat $^ | grep -E "<2[0-9A-E]...>" > $@
-all.glyphs:80-irg2021.glyphs rgnsource.list
+all.glyphs:85-aj1.glyphs rgnsource.list
+	python add-glyph.py $^ > $@
+85-aj1.glyphs:80-irg2021.glyphs aj1kanji.list
 	python add-glyph.py $^ > $@
 80-irg2021.glyphs:70-ucs-all.glyphs irg2021.list
 	python add-glyph.py $^ > $@
@@ -90,12 +93,18 @@ all.glyphs:80-irg2021.glyphs rgnsource.list
 	python add-glyph.py $^ > $@
 20-other-ivs.glyphs:05-aj1kanji.glyphs ivs-other.list
 	python add-glyph.py $^ > $@
-05-aj1kanji.glyphs:aj1kanji.list
-	python make-aj1.py aj1kanji.list $(VS_dir)/Adobe-Japan1_sequences.txt > $@
+05-aj1kanji.glyphs:aj1kanji-new.list
+	python make-aj1.py $^ $(VS_dir)/Adobe-Japan1_sequences.txt > $@
 
-#IVS重複もあるため、実体として各CIDのaj1-XXXXXを使う方がシンプルである。
+#uXXXX-jn導入と同時にAJ1のIVSも概ねGlyphWikiの標準的なデザインを採用するようになったため、aj1-XXXXXではなくIVSグリフを使用
+aj1kanji-new.list:aj1kanji-new.name.body
+	cat ../VS/AJ1-IVS-cleaned.txt | cut -f 2 -d " " | paste $^ - > $@
+aj1kanji-new.name:
+	cat ../VS/AJ1-IVS-cleaned.txt | cut -f 1 -d " " > $@
+
+#IVS重複もあるため、実体として各CIDのaj1-XXXXXを使う方がシンプルではある。
 aj1kanji.list:aj1kanji.name.body
-	cat aj1kanji.name | sed 's/^aj1-0*//' | paste $^ - > $@
+	cat aj1kanji.name | paste $^ - > $@
 #唯一IVSが割り当てられているAJ1の非漢字であるCID+12869（ルビ用の「注」）を追加
 aj1kanji.name:
 	cat ../AJ1/kanji-name-list > $@
