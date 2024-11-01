@@ -3,7 +3,7 @@ AJ1_dir=../AJ1
 config_dir=../config
 GlyphWiki_dir=../glyphwiki
 include $(config_dir)/config.mk
-NS := ucs-all ucs-main ucs-ivsbase ucs-svsbase ucs-mj ucs-hanyo ucs-SHSans aj1kanji aj1kanji-new ivs-other irg2021 rgnsource
+NS := ucs-all ucs-main ucs-ivsbase ucs-svsbase ucs-mj ucs-hanyo ucs-SHSans aj1kanji aj1kanji-new ivs-other irg2021 irg2024 irg2015 irg2017 rgnsource
 NAMES := $(addsuffix .name,$(NS))
 BODIES := $(addsuffix .body,$(NAMES))
 #ここで!を付けておくと存在しなかった場合に-*v（仮想地域ソース）が参照される。buhin-subst.jsも参照。
@@ -24,8 +24,22 @@ irg2021.list:irg2021.name.body
 	cat $^ | $(GNU_GREP) -v "****error****" | sed "s/$$/\tXXXX/" > $@
 #irg2021.list:irg2021.name.body irg2021.name
 #	paste $^ | $(GNU_GREP) -v "****error****" > $@
+irg2024.list:irg2024.name.body
+	cat $^ | $(GNU_GREP) -v "****error****" | sed "s/$$/\tXXXX/" > $@
+irg2015.list:irg2015.name.body
+	cat $^ | $(GNU_GREP) -v "****error****" | sed "s/$$/\tXXXX/" > $@
+irg2017.list:irg2017.name.body
+	cat $^ | $(GNU_GREP) -v "****error****" | sed "s/$$/\tXXXX/" > $@
+
+
 irg2021.name:
 	seq 1 4952 | xargs printf "%05d\n" | sed "s/^/irg2021-/" > $@
+irg2024.name:
+	seq 1 4674 | xargs printf "%05d\n" | sed "s/^/irg2024-/" > $@
+irg2015.name:
+	seq 1 5547 | xargs printf "%05d\n" | sed "s/^/irg2015-/" > $@
+irg2017.name:
+	seq 1 5039 | xargs printf "%05d\n" | sed "s/^/irg2017-/" > $@
 rgnsource.list:rgnsource.name.body
 	cat rgnsource.name | sed 's/^/RGN:/' | paste $^ -> $@
 #rgnsource.list:rgnsource.name.body rgnsource.name
@@ -70,7 +84,13 @@ ucs-SHSans.ids:
 	cat $^ | grep -E "<2[0-9A-E]...>" > $@
 all.glyphs:85-aj1.glyphs rgnsource.list
 	python add-glyph.py $^ > $@
-85-aj1.glyphs:80-irg2021.glyphs aj1kanji.list
+85-aj1.glyphs:83-irg2017.glyphs aj1kanji.list
+	python add-glyph.py $^ > $@
+83-irg2017.glyphs:82-irg2015.glyphs irg2017.list
+	python add-glyph.py $^ > $@
+82-irg2015.glyphs:81-irg2024.glyphs irg2015.list
+	python add-glyph.py $^ > $@
+81-irg2024.glyphs:80-irg2021.glyphs irg2024.list
 	python add-glyph.py $^ > $@
 80-irg2021.glyphs:70-ucs-all.glyphs irg2021.list
 	python add-glyph.py $^ > $@
