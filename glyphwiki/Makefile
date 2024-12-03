@@ -35,7 +35,7 @@ kage.sqlite3:
 test:
 	sqlite3 kage.sqlite3 "SELECT * FROM glyphs WHERE name = 'cid-13370'"
 dump_all_versions.txt dump_newest_only.txt:
-	wget http://glyphwiki.org/dump.tar.gz
+	wget  --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36" http://glyphwiki.org/dump.tar.gz
 # during glyphwiki.org's maintenance or old versions
 #	wget http://kage.osdn.jp/glyphwiki/dump12.tar.gz -O dump.tar.gz
 	tar -xvf dump.tar.gz dump_all_versions.txt dump_newest_only.txt

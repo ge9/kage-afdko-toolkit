@@ -7,5 +7,6 @@
 *.out.*
 *.temp
 *.final
+*.pdf
 /unused
 /backup

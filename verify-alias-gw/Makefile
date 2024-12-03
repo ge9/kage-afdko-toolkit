@@ -9,14 +9,14 @@ PAIR_MUST_BE_IDENTICAL := must-be-identical.1 must-be-identical.2
 
 #aj1.gw: consistency between "aj1-XXXXX" and "uXXXX-ue01XX"(or "-ufeXX") in AJ1 file
 #Adobe-Japan1_sequences.txtではIVS→SVSの順に並んでいるので、その順に並ぶはず。
-#diffが出ないことが想定される
+#（※-jnの導入に伴い、多くのdiffが出ている）diffが出ないことが想定される
 PAIR_AJ1 := aj1-seq aj1-cid
 #consistency between "aj1-XXXXX" and "uXXXX-ufeXX" in AJ1 file
 #PAIR_AJ1_SVS := aj1-svs-seq aj1-svs-cid
 
 #ivs-aj1.gw consistency between "aj1-XXXXX" and "uXXXX-ue01XX" in IVD file (maybe unnecessary)
 PAIR_IVS_AJ1 := ivs-aj1-seq ivs-aj1
-#diffが出ないことが想定される。aj1.gwのIVS部分、つまりaj1.gwの先頭の何行かと一致するはず。
+#（※-jnの導入に伴い、多くのdiffが出ている）diffが出ないことが想定される。aj1.gwのIVS部分、つまりaj1.gwの先頭の何行かと一致するはず。
 
 #aj1-only1.gw: consistency of Unicode point that has only "uXXXX-ue0100" (only necessary for AJ1)
 PAIR_AJ1_ONLY1 := aj1-only1-seq aj1-only1-uni

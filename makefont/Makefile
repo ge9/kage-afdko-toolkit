@@ -1,3 +1,5 @@
+# Usage: ./fileenv ./kanjisample.env env NZM_WEIGHT_STR=Regular NZM_FONT_VER=0.001 make fontsample-Regular.otf
+
 ifndef NZM_CHARSET_PARAM
   NZM_CHARSET_PARAM=ERR_NOT_SET
 endif

@@ -7,7 +7,7 @@ all:
 # make Classic.kanjisample.nosimpl.svg
 # make Regular.kanjisample.simpl.svg
 
-# WeightがClassicの場合はjs側でパスのunionを行ってsvgフォントをそのまま出力
+# svgフォントをそのまま出力する。WeightがClassicの場合（js側でパスのunionが行われる）に使用する。
 %.nosimpl.svg:
 	cp svgfont_header $@
 	node ../js/make-font.js ../glyphs/`echo $* | cut -f 2 -d .`.glyphs $@ `echo $* | cut -f 1 -d . | tr '[:lower:]' '[:upper:]'`

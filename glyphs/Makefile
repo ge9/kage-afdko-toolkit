@@ -9,7 +9,7 @@ BODIES := $(addsuffix .body,$(NAMES))
 #ここで!を付けておくと存在しなかった場合に-*v（仮想地域ソース）が参照される。buhin-subst.jsも参照。
 #（網羅性という観点ではj, jvなどそれぞれ明示的に指定したほうがよい？（-jが誤って作成されていると-jvが無視される））
 RGN_SOURCES := g! t! j! k! v! h! kp! u m! s! uk us i ja js jn
-all:all.parts-list 99-extB-F.glyphs kanjisample.glyphs #bugs.glyphs
+all:all.parts-list 99-extB-F.glyphs kanjisample.glyphs kanjidebug.glyphs #bugs.glyphs
 
 %.parts-list: %.glyphs
 	node ../js/make-cache.js $^ $@
@@ -17,6 +17,8 @@ kanjisample.glyphs:70-ucs-all.glyphs
 	grep -f $(config_dir)/kanjisample.grep $^ > $@
 bugs.glyphs:70-ucs-all.glyphs
 	grep -f $(config_dir)/bugs.grep $^ > $@
+kanjidebug.glyphs:
+	cp $(config_dir)/kanjidebug.glyphs $@
 
 #コメントアウトされたものは、将来的にはこのように使うだろうと予想される例
 #今は重くなりすぎるので、実体の列挙のみ行い、割り当てポイントは無視
@@ -124,7 +126,7 @@ aj1kanji-new.name:
 
 #IVS重複もあるため、実体として各CIDのaj1-XXXXXを使う方がシンプルではある。
 aj1kanji.list:aj1kanji.name.body
-	cat aj1kanji.name | paste $^ - > $@
+	cat aj1kanji.name | sed 's/^aj1-0*//' | paste $^ - > $@
 #唯一IVSが割り当てられているAJ1の非漢字であるCID+12869（ルビ用の「注」）を追加
 aj1kanji.name:
 	cat ../AJ1/kanji-name-list > $@
