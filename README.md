@@ -5,7 +5,7 @@
 # bundled dependencies
 These are included in this repository as git submodules.
 - [adobe-type-tools/perl-scripts: Command-line Perl Scripts](https://github.com/adobe-type-tools/perl-scripts)
-- [Glyphwiki data validator (gwv)](https://github.com/kurgm/gwv)
+- [gwv-view](https://github.com/kurgm/gwv-view)
 - [kage-engine-2](https://github.com/ge9/kage-engine-2)
 
 # dependencies
@@ -19,6 +19,8 @@ These are included in this repository as git submodules.
 - Inkscape (version 1.0+)
 - FontForge
 - sqlite3
+- [Glyphwiki data validator (gwv)](https://github.com/kurgm/gwv)
+  - It is recommended to replace three `ctx.is_hikanji`s in validators/illegal.py with `False` to detect illegal strokes in non-Kanji
 
 # preparation
 - run `git submodule update --init --recursive` to fetch submodules (or you can specify `--recursive` when cloning)
@@ -106,8 +108,9 @@ ucs-all.rangeでUnicodeの全グリフを指定
 ucs-main.rangeで謎乃明朝（"+"じゃない方）に入れるグリフを指定
 ## GlyphWikiのグリフの置換指定・バージョン検査用ファイル
 ### force_version.conf
-u5000>=4のような書式で部品の最低バージョンを指定する。単にu5000と書いた場合は最新版のみ許容される。違反してもフォント生成に支障はないが、verify-versionのところで「ERROR: illegal old version glyph: u5000@1」のような警告が表示される。
-- 省略すると最新版になるのは、当面の使い勝手のためにこのような仕様にしただけで、本来は明示的に最新バージョンを指定するのが良いかもしれない。現状だと、この方式で指定しているグリフに更新が発生すると、エラー扱いになるため、そのたびに該当グリフにバージョン番号を手動で付記するという場当たり的な運用方法になっている。
+u5000>=4のような書式で部品の最低バージョンを指定する。違反してもフォント生成に支障はないが、verify-versionのところで「ERROR: illegal old version glyph: u5000@1」のような警告が表示される。単にu5000と書いた場合は最新版のみ許容される。
+- 基本的には明示的にバージョンを指定するのが望ましい。最新版指定はテスト時には便利だが、該当グリフが更新されるたびにエラーが発生する。
+- `#`で始まる行はコメントとなり無視される。ファイル末尾の空行は許容される。
 白紙化された部品が最新版のみ許容するよう指定されていた場合は、使用禁止ということになる。あるいはu5000>=1000のような大きな番号を使用して使用禁止を表現することもできる。
 ### subst_glyph.conf
 現状、あまり使われていない。
@@ -120,11 +123,13 @@ u5000>=4のような書式で部品の最低バージョンを指定する。単
 ユーザー占有グリフが使われていてエラーが起きた場合（あらかじめデータベースから削ってしまっているのでエラーになる）などもこのファイルで置換することで回避可能。例えば以下のようにすると確実にnonexistent_userglyphというグリフによるエラーを避けられる。u0123は漢字に使われないグリフとして適当に選んだ。後からall.parts-listを見てu0123を探せばよい（実際、ユーザー占有グリフが使用されていた場合は手動でこの作業を行っている）。
 nonexistent_userglyph>=0 u0123
 その他にも、特定のグリフによる影響（illegal old version glyphのエラーなど）を一時的に回避したい場合に使用できる。
-また、force_version.confの機能を兼ねていて、違反するグリフは前述のものと同じ警告が出る。これは一部バージョンのみが別部品に置き換えられるとデザインが不整合になるおそれがあるためである。
+また、force_version.confの機能を兼ねていて、違反するグリフは前述のものと同じ「ERROR: illegal old version glyph」警告が出る。これは一部バージョンのみが別部品に置き換えられるとデザインが不整合になるおそれがあるためである。
+- TODO: irg2024-01858～irg2024-01862 への対応
 ### whitelist.conf
-デザイン上、やむを得ず不正データが使われているものについては、検査対象外とするため、ここに指定する。こちらも最低バージョン指定可能（省略は最新版指定と同等）。この内容とsubst_partsのうち一部（不正データが用いられていて、かつカスタム部品に置換されるもの）をあわせたものが
+デザイン上、やむを得ず不正データが使われているものについては、verify-designでの検査対象外とするため、ここに指定する。こちらも最低バージョン指定可能（省略は最新版指定と同等）。この内容とsubst_partsのうち一部（不正データが用いられていて、かつカスタム部品に置換されるもの）をあわせたものが
 https://glyphwiki.org/wiki/Group:KAGE%e3%82%a8%e3%83%b3%e3%82%b8%e3%83%b3-%e5%95%8f%e9%a1%8c%e3%81%ae%e3%81%82%e3%82%8b%e6%bc%a2%e5%ad%97%e3%82%b0%e3%83%aa%e3%83%95
 の前半部分にあたる。
+このファイルに関しては、指定されたものより古いバージョンが使われても「ERROR: illegal old version glyph: u5000@1」は出ない。なぜなら、verify-designでの報告が増える以外の害がないからである。
 # js
 フォント生成などのための各種JavaScriptファイル。Node.jsで動作する。
 ## util.js

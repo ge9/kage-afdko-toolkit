@@ -81,7 +81,7 @@ ucs-SHSans.ids:
 	touch $@
 	paste $^ > $@
 #make glyphs files
-#互換漢字補助は除く
+#extB-extF and extI. 互換漢字補助は除く
 99-extB-F.glyphs:70-ucs-all.glyphs
 	cat $^ | grep -E "<2[0-9A-E]...>" > $@
 all.glyphs:85-aj1.glyphs rgnsource.list

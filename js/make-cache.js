@@ -16,8 +16,14 @@ const rl = readline.createInterface({input: readStream});
 rl.on('line', (charinfo) => {
   if (charinfo === "") return;
   const glyphname = charinfo.split("\t")[0].split("/")[1];
-  const glyphData = buhin_mem.search(glyphname);
-  kage.getStrokes(glyphData);
+  try{
+    const glyphData = buhin_mem.search(glyphname);
+    kage.getStrokes(glyphData);//making cache
+  }catch (e){
+    console.log("FATAL ERROR: in processing glyph [["+glyphname+"]]")
+    fs.unlink(process.argv[3])//not working?
+    throw e
+  }
 });
 
 rl.on('close', () => {
