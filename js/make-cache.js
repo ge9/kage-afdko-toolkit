@@ -20,7 +20,7 @@ rl.on('line', (charinfo) => {
     const glyphData = buhin_mem.search(glyphname);
     kage.getStrokes(glyphData);//making cache
   }catch (e){
-    console.log("FATAL ERROR: in processing glyph [["+glyphname+"]]")
+    console.log("[[ERROR]]: in processing glyph [["+glyphname+"]]")
     fs.unlink(process.argv[3])//not working?
     throw e
   }

@@ -33,7 +33,7 @@ const glist = fs.readFileSync(process.argv[2]).toString().split('\n');
 for (let g of glist){
   const gs = g.split("@")
   if (force_min_version[gs[0]] && (force_min_version[gs[0]]*1 > gs[1]*1) ){
-    console.log("ERROR: illegal old version glyph: "+ g)
+    console.log("[[ERROR]]: illegal old version glyph: "+ g)
   }
 }
 const white_list = fs.readFileSync("../config/whitelist.conf").toString().split('\n').filter((s) => !s.startsWith("#")).filter((s) => s != "")

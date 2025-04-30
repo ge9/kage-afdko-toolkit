@@ -6,7 +6,8 @@ include $(config_dir)/config.mk
 NS := ucs-all ucs-main ucs-ivsbase ucs-svsbase ucs-mj ucs-hanyo ucs-SHSans aj1kanji aj1kanji-new ivs-other irg2021 irg2024 irg2015 irg2017 rgnsource
 NAMES := $(addsuffix .name,$(NS))
 BODIES := $(addsuffix .body,$(NAMES))
-#ここで!を付けておくと存在しなかった場合に-*v（仮想地域ソース）が参照される。buhin-subst.jsも参照。
+#https://glyphwiki.org/wiki/GlyphWiki:prefix に従った各バリエーションへの対応
+#!を付けておくと存在しなかった場合にvを付けたもの（仮想地域ソース）が参照される。buhin-subst.jsも参照。
 #（網羅性という観点ではj, jvなどそれぞれ明示的に指定したほうがよい？（-jが誤って作成されていると-jvが無視される））
 RGN_SOURCES := g! t! j! k! v! h! kp! u m! s! uk us i ja js jn
 all:all.parts-list 99-extB-F.glyphs kanjisample.glyphs kanjidebug.glyphs #bugs.glyphs
@@ -80,6 +81,7 @@ ucs-SHSans.ids:
 #更新されないことがあるのでtouchする
 	touch $@
 	paste $^ > $@
+	./checkerror.sh $@
 #make glyphs files
 #extB-extF and extI. 互換漢字補助は除く
 99-extB-F.glyphs:70-ucs-all.glyphs
@@ -118,21 +120,25 @@ all.glyphs:85-aj1.glyphs rgnsource.list
 05-aj1kanji.glyphs:aj1kanji-new.list
 	python make-aj1.py $^ $(VS_dir)/Adobe-Japan1_sequences.txt > $@
 
-#uXXXX-jn導入と同時にAJ1のIVSも概ねGlyphWikiの標準的なデザインを採用するようになったため、aj1-XXXXXではなくIVSグリフを使用
+#uXXXX-jn導入と同時にAJ1のIVSも概ねGlyphWikiの標準的なデザインを採用するようになったため、aj1-XXXXXではなくIVSグリフを使用。
+#この時点ではIVS重複が未処理だが、make-aj1.pyにより一つにまとめられるので問題ない。
 aj1kanji-new.list:aj1kanji-new.name.body
 	cat ../VS/AJ1-IVS-cleaned.txt | cut -f 2 -d " " | paste $^ - > $@
+	./checkerror.sh $@
 aj1kanji-new.name:
 	cat ../VS/AJ1-IVS-cleaned.txt | cut -f 1 -d " " > $@
 
-#IVS重複もあるため、実体として各CIDのaj1-XXXXXを使う方がシンプルではある。
+#IVS重複もあるため、実体として各CIDのaj1-XXXXXを使う方がシンプルではあるが、上記のuXXXX-jn導入によりaj1-XXXXXはフォントには不使用とし、データの検証のみ行う。
 aj1kanji.list:aj1kanji.name.body
 	cat aj1kanji.name | sed 's/^aj1-0*//' | paste $^ - > $@
+	./checkerror.sh $@
 #唯一IVSが割り当てられているAJ1の非漢字であるCID+12869（ルビ用の「注」）を追加
 aj1kanji.name:
 	cat ../AJ1/kanji-name-list > $@
 	echo aj1-12869 >> $@
 ivs-other.list:ivs-other.name.body ivs-other.ids
 	paste ivs-other.name.body ivs-other.ids > $@
+	./checkerror.sh $@
 #"uniq" required for shared IVSes
 ivs-other.ids:
 	cat $(VS_dir)/IVD_Sequences.txt | grep -v '#' | grep -v 'Adobe-Japan1;' | cut -f 1 -d ";" | uniq > $@
@@ -141,6 +147,6 @@ ivs-other.name:ivs-other.ids
 clean:
 	rm -f *.glyphs *.name *.list *.body *.ids *.parts-list aj1kanji.cids
 #cat $(VS_dir)/IVD_Sequences.txt | grep -v '#' | grep -v 'Adobe-Japan1;' | cut -f 1 -d ";" | sed 's/^/u/' | sed 's/ /-u/' | tr '[:upper:]' '[:lower:]' > $@
-#TEST
+#TEST (not used)
 only-ucs.glyphs:empty ucs-main.ucslist
 	python add-glyph.py $^ > $@

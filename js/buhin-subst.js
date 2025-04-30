@@ -37,12 +37,12 @@ export class Buhin_subst {
     let data = null
     if (!name_temp[1]){//バージョン指定なし
       const inf = this.get_info_without_ver(name_temp[0])
-      if (!inf || inf.data == "0:0:0:0") {if (!fallback_available) {throw("ERROR: search_body: No such (latest) glyph in glyphwiki: "+name_temp[0])} else {return false}}
+      if (!inf || inf.data == "0:0:0:0") {if (!fallback_available) {throw("[[ERROR]]: search_body: No such (latest) glyph in glyphwiki: "+name_temp[0])} else {return false}}
       data = inf.data
     }else{
       const inf = this.get_info_ver(name_temp[0], name_temp[1]);
       //実際にはfallback_availableが指定されることはないはず
-      if (!inf || inf == "0:0:0:0") {if (!fallback_available) {throw("ERROR: search_body: No such glyph in glyphwiki: "+name2)} else {return false}}
+      if (!inf || inf == "0:0:0:0") {if (!fallback_available) {throw("[[ERROR]]: search_body: No such glyph in glyphwiki: "+name2)} else {return false}}
       data = inf
     }
     if(data.slice(0,19)=="99:0:0:0:0:200:200:"&&data.match(/\$/)==null){//alias
@@ -65,7 +65,7 @@ export class Buhin_subst {
         //指定がなければ最新バージョンと見なす
         if (!verstr) {
           const inf = this.get_info_without_ver(temp[0])
-          if (!inf) throw "ERROR: search: tried to substitute a nonexistent glyph without specifying version: " + temp[0]
+          if (!inf) throw "[[ERROR]]: search: tried to substitute a nonexistent glyph without specifying version: " + temp[0]
           verstr = inf.version
         }
         //バージョン指定を満たすか判定
@@ -74,8 +74,8 @@ export class Buhin_subst {
         }
       }
       const info = this.get_info_ver(temp[0], temp[1]);
-      if (info===false) { throw ("ERROR: search: the glyph exists, but no such version: " + name) };
-      if (info===undefined || info==="0:0:0:0") { throw ("ERROR: search: no such glyph or version: " + name) };
+      if (info===false) { throw ("[[ERROR]]: search: the glyph exists, but no such version: " + name) };
+      if (info===undefined || info==="0:0:0:0") { throw ("[[ERROR]]: search: no such glyph or version: " + name) };
       this.cache.add(temp[0]+"@"+temp[1]);
       return info
     } else {//バージョン指定なし。バージョン最新のものをえらぶ
@@ -83,8 +83,8 @@ export class Buhin_subst {
         return this.search(this.subst_parts[name][0]);
       }
       const res = this.get_info_without_ver(name);
-      if (!res) throw "ERROR: search: no such glyph: " + name
-      if (res.data == "0:0:0:0") throw "ERROR: search: the glyph has been deleted: " + name
+      if (!res) throw "[[ERROR]]: search: no such glyph: " + name
+      if (res.data == "0:0:0:0") throw "[[ERROR]]: search: the glyph has been deleted: " + name
       this.cache.add(name+"@"+res.version);
       return res.data
     }
