@@ -9,18 +9,20 @@ These are included in this repository as git submodules.
 - [kage-engine-2](https://github.com/ge9/kage-engine-2)
 
 # dependencies
-- [AFDKO](https://github.com/adobe-type-tools/afdko)
-- basic unix commands (sh, grep, sed, etc.) 
-  - need GNU sed (gsed), GNU grep (ggrep), and GNU awk (gawk);
-  - Works in Cygwin
-- Node.js (tested with v14 and v18)
-- Perl (for perl-scripts)
-- Python (**version 3.8+ required** for gwv)
-- Inkscape (version 1.0+)
-- FontForge
-- sqlite3
-- [Glyphwiki data validator (gwv)](https://github.com/kurgm/gwv)
-  - It is recommended to replace three `ctx.is_hikanji`s in validators/illegal.py with `False` to detect illegal strokes in non-Kanji
+- preprocessing, validation
+  - basic unix commands (sh, grep, sed, etc.) 
+    - need GNU sed (gsed), GNU grep (ggrep), and GNU awk (gawk);
+    - Works in Cygwin
+  - Node.js (tested with v14 and v18)
+  - sqlite3
+  - Python (**version 3.8+ required** for gwv)
+  - [Glyphwiki data validator (gwv)](https://github.com/kurgm/gwv)
+    - It is recommended to replace three `ctx.is_hikanji`s in validators/illegal.py with `False` to detect illegal strokes in non-Kanji
+- building the font
+  - [AFDKO](https://github.com/adobe-type-tools/afdko)
+  - Perl (for perl-scripts)
+  - Inkscape (version 1.0+)
+  - FontForge
 
 # preparation
 - run `git submodule update --init --recursive` to fetch submodules (or you can specify `--recursive` when cloning)
@@ -110,7 +112,7 @@ ucs-main.rangeで謎乃明朝（"+"じゃない方）に入れるグリフを指
 ### force_version.conf
 u5000>=4のような書式で部品の最低バージョンを指定する。違反してもフォント生成に支障はないが、verify-versionのところで「ERROR: illegal old version glyph: u5000@1」のような警告が表示される。単にu5000と書いた場合は最新版のみ許容される。
 - 基本的には明示的にバージョンを指定するのが望ましい。最新版指定はテスト時には便利だが、該当グリフが更新されるたびにエラーが発生する。
-- `#`で始まる行はコメントとなり無視される。ファイル末尾の空行は許容される。
+- `#`で始まる行はコメントとなり無視される。空行も許容（無視）される。以降の3ファイルについても同様。
 白紙化された部品が最新版のみ許容するよう指定されていた場合は、使用禁止ということになる。あるいはu5000>=1000のような大きな番号を使用して使用禁止を表現することもできる。
 ### subst_glyph.conf
 現状、あまり使われていない。
@@ -126,7 +128,7 @@ nonexistent_userglyph>=0 u0123
 また、force_version.confの機能を兼ねていて、違反するグリフは前述のものと同じ「ERROR: illegal old version glyph」警告が出る。これは一部バージョンのみが別部品に置き換えられるとデザインが不整合になるおそれがあるためである。
 - TODO: irg2024-01858～irg2024-01862 への対応
 ### whitelist.conf
-デザイン上、やむを得ず不正データが使われているものについては、verify-designでの検査対象外とするため、ここに指定する。こちらも最低バージョン指定可能（省略は最新版指定と同等）。この内容とsubst_partsのうち一部（不正データが用いられていて、かつカスタム部品に置換されるもの）をあわせたものが
+デザイン上、やむを得ず不正データが使われているものについては、verify-designでの検査対象外とするため、ここに指定する。こちらも最低バージョン指定可能（省略は最新版指定と同等）。この内容とsubst_partsのうち一部（不正データが用いられているもの）をあわせたものが
 https://glyphwiki.org/wiki/Group:KAGE%e3%82%a8%e3%83%b3%e3%82%b8%e3%83%b3-%e5%95%8f%e9%a1%8c%e3%81%ae%e3%81%82%e3%82%8b%e6%bc%a2%e5%ad%97%e3%82%b0%e3%83%aa%e3%83%95
 の前半部分にあたる。
 このファイルに関しては、指定されたものより古いバージョンが使われても「ERROR: illegal old version glyph: u5000@1」は出ない。なぜなら、verify-designでの報告が増える以外の害がないからである。

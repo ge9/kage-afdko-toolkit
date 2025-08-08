@@ -1,7 +1,7 @@
 SUBDIRS=glyphs verify-design
 SUBDIRS_PREPARE=glyphwiki verify-alias-gw
 SUBDIRS_ALL=AJ1 SHS-JP hanyo VS
-
+# This makefile only does GlyphWiki data preprocessing and validation (no font generation)
 all:
 	list='$(SUBDIRS_ALL) $(SUBDIRS_PREPARE) $(SUBDIRS)'; for subdir in $$list; do \
 	$(MAKE) -C $$subdir || exit 1;\
