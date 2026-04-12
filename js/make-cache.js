@@ -21,7 +21,7 @@ rl.on('line', (charinfo) => {
     kage.getStrokes(glyphData);//making cache
   }catch (e){
     console.log("[[ERROR]]: in processing glyph [["+glyphname+"]]")
-    fs.unlink(process.argv[3])//not working?
+    //fs.unlink(process.argv[3])//not working?
     throw e
   }
 });

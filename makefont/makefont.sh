@@ -5,4 +5,5 @@ do
 ./fileenv ./45Nazo.env env NZM_WEIGHT_STR=$weightstr make NazoMin-$weightstr.otf
 ./fileenv ./99Nazo.env env NZM_WEIGHT_STR=$weightstr make NazoMin+-$weightstr.otf
 ./fileenv ./kanjisample.env env NZM_WEIGHT_STR=$weightstr make fontsample-$weightstr.otf
+./fileenv ./kanjidebug.env env NZM_WEIGHT_STR=$weightstr make fontdebug-$weightstr.otf
 done

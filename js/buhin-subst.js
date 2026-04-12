@@ -9,10 +9,16 @@ export class Buhin_subst {
     this.cache = new Set();
     //名前とバージョンを受け取り、KAGEデータを返す。
     //該当グリフ・バージョンが存在しない（あるいは白紙化されている）場合はundefinedを返すが、グリフ自体が存在することがわかっている場合はfalseを返してもよい。
-    this.get_info_ver = get_info_ver
+    this.get_info_ver = function(name, ver){
+      if(name.startsWith("gw:")) return get_info_ver_gw(name.substring(3), ver)
+      return get_info_ver(name, ver)
+    }
     //バージョン指定（@）無しの引数を受け取り、KAGEデータと最新バージョン番号を返す。
     //グリフ自体が存在しない場合はundefinedを返す。
-    this.get_info_without_ver = get_info_without_ver
+    this.get_info_without_ver = function(name){
+      if(name.startsWith("gw:")) return get_info_without_ver_gw(name.substring(3))
+      return get_info_without_ver(name)
+    }
   }
   //subst_bodyを用いる。fallback_availableがtrueのときは、検索に失敗したときに例外ではなくfalseを返す。（地域グリフ優先指定のため）
   search_body(name0, fallback_available){
@@ -91,78 +97,6 @@ export class Buhin_subst {
   }
 }
 
-//sqlite3の内容をメモリに全て読み込む。初期化に数秒以上かかるが、最も高速。
-function make_mem_buhin(noSubst) {
-  var hash0 = make_kage_hash('../glyphwiki/kage.sqlite3')
-  var subst_body0 = make_subst_body("../config/subst_glyph.conf");
-  var subst_parts0 = make_subst_parts("../config/subst_parts.conf");
-  if (noSubst) subst_parts0 = {};
-
-  function get_info_ver(name, ver) {
-    if (!hash0[name]) return undefined;
-    if (!hash0[name][ver]) return false;
-    return hash0[name][ver];
-  }
-
-  function get_info_without_ver(name) {
-    if (!hash0[name]) return undefined;
-    const vers = Object.keys(hash0[name]);
-    //バージョン最大のもの
-    const latest = vers.reduce((a, b) => Math.max(a, b));
-    return { version: latest, data: hash0[name][latest] }
-  }
-  return new Buhin_subst(get_info_ver, get_info_without_ver, subst_body0, subst_parts0);
-}
-
-//glyphwikiのサイトにリクエストを行う。最も遅いが、最新のデータが利用できる。
-function make_gw_buhin(noSubst) {
-  var subst_body0 = make_subst_body("../config/subst_glyph.conf");
-  var subst_parts0 = make_subst_parts("../config/subst_parts.conf");
-  if (noSubst) subst_parts0 = {};
-  function req_gw(name) {
-    var response = syncrequest(
-      'GET',
-      'https://glyphwiki.org/json?name=' + name
-    );
-    return JSON.parse(response.body)
-  }
-
-  function get_info_ver(name, ver) {
-    const res = req_gw(name + "@" + ver)
-    if (!res.data) return undefined;
-    return res.data;
-  }
-
-  function get_info_without_ver(name) {
-    const res = req_gw(name)
-    if (!res.data) return undefined;
-    return { version: res.version, data: res.data }
-  }
-  return new Buhin_subst(get_info_ver, get_info_without_ver, subst_body0, subst_parts0);
-}
-
-//sqlite3を使うが、better-sqlite3経由で毎回クエリを送る。思ったよりかなり遅い。
-function make_sql_buhin() {
-  var db = new Database('../glyphwiki/kage.sqlite3', { readonly: true });
-  var subst_body0 = make_subst_body("../config/subst_glyph.conf");
-  var subst_parts0 = make_subst_parts("../config/subst_parts.conf")
-
-  function get_info_ver(name, ver) {
-    const stmt = db.prepare("SELECT * FROM glyphs WHERE name='" + name + "' AND version=" + ver);
-    const res = stmt.get()
-    if(!res) return undefined;
-    return res.kage;
-  }
-
-  function get_info_without_ver(name) {
-    const stmt = db.prepare("SELECT * FROM glyphs WHERE name='" + name + "' ORDER BY version DESC LIMIT 1");      
-    const res = stmt.get()
-    if (!res) return undefined;
-    return { version: res.version, data: res.kage }
-  }
-  return new Buhin_subst(get_info_ver, get_info_without_ver, subst_body0, subst_parts0);
-}
-
 function make_kage_hash(db_filename) {
   var db = new Database(db_filename, { readonly: true });
   var hash0 = {};
@@ -197,5 +131,81 @@ function make_subst_parts(subst_parts_file) {
   }
   return subst_parts0;
 }
+
+function req_gw(name) {
+  var response = syncrequest(
+    'GET',
+    'https://glyphwiki.org/json?name=' + name
+  );
+  return JSON.parse(response.body)
+}
+//GlyphWiki用のみ"gw:"指定で使うので別で定義
+function get_info_ver_gw(name, ver) {
+  const res = req_gw(name + "@" + ver)
+  if (!res.data) return undefined;
+  return res.data;
+}
+
+function get_info_without_ver_gw(name) {
+  const res = req_gw(name)
+  if (!res.data) return undefined;
+  return { version: res.version, data: res.data }
+}
+
+//以下、異なるソースを使用する3つのバリエーションを定義
+
+//sqlite3の内容をメモリに全て読み込む。初期化に数秒以上かかるが、最も高速。
+function make_mem_buhin(noSubst) {
+  var hash0 = make_kage_hash('../glyphwiki/kage.sqlite3')
+  var subst_body0 = make_subst_body("../config/subst_glyph.conf");
+  var subst_parts0 = make_subst_parts("../config/subst_parts.conf");
+  if (noSubst) subst_parts0 = {};
+
+  function get_info_ver(name, ver) {
+    if (!hash0[name]) return undefined;
+    if (!hash0[name][ver]) return false;
+    return hash0[name][ver];
+  }
+
+  function get_info_without_ver(name) {
+    if (!hash0[name]) return undefined;
+    const vers = Object.keys(hash0[name]);
+    //バージョン最大のもの
+    const latest = vers.reduce((a, b) => Math.max(a, b));
+    return { version: latest, data: hash0[name][latest] }
+  }
+  return new Buhin_subst(get_info_ver, get_info_without_ver, subst_body0, subst_parts0);
+}
+
+//glyphwikiのサイトにリクエストを行う。最も遅いが、最新のデータが利用できる。
+function make_gw_buhin(noSubst) {
+  var subst_body0 = make_subst_body("../config/subst_glyph.conf");
+  var subst_parts0 = make_subst_parts("../config/subst_parts.conf");
+  if (noSubst) subst_parts0 = {};
+  return new Buhin_subst(get_info_ver_gw, get_info_without_ver_gw, subst_body0, subst_parts0);
+}
+
+//sqlite3を使うが、better-sqlite3経由で毎回クエリを送る。思ったよりかなり遅い。
+function make_sql_buhin() {
+  var db = new Database('../glyphwiki/kage.sqlite3', { readonly: true });
+  var subst_body0 = make_subst_body("../config/subst_glyph.conf");
+  var subst_parts0 = make_subst_parts("../config/subst_parts.conf")
+
+  function get_info_ver(name, ver) {
+    const stmt = db.prepare("SELECT * FROM glyphs WHERE name='" + name + "' AND version=" + ver);
+    const res = stmt.get()
+    if(!res) return undefined;
+    return res.kage;
+  }
+
+  function get_info_without_ver(name) {
+    const stmt = db.prepare("SELECT * FROM glyphs WHERE name='" + name + "' ORDER BY version DESC LIMIT 1");      
+    const res = stmt.get()
+    if (!res) return undefined;
+    return { version: res.version, data: res.kage }
+  }
+  return new Buhin_subst(get_info_ver, get_info_without_ver, subst_body0, subst_parts0);
+}
+
 
 export default {make_mem_buhin, make_gw_buhin, make_sql_buhin}

@@ -20,18 +20,18 @@ fa70-fad9
 #Ext B
 20000-2a6df
 #Ext C
-2a700-2b738
+2a700-2b73f
 #Ext D
 2b740-2b81d
 #Ext E
-2b820-2cea1
+2b820-2cead
 #Ext F
 2ceb0-2ebe0
 #Ext G
 30000-3134a
-#Ext C (addition in Unicode 15.0)
-2b739-2b739
 #Ext H
 31350-323af
 #Ext I
 2ebf0-2ee5d
+#Ext J
+323b0-3347b
