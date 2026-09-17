@@ -45,6 +45,7 @@ irg2017.name:
 	seq 1 5039 | xargs printf "%05d\n" | sed "s/^/irg2017-/" > $@
 rgnsource.list:rgnsource.name.body
 	cat rgnsource.name | sed 's/^/RGN:/' | paste $^ -> $@
+	./checkerror.sh $@
 #rgnsource.list:rgnsource.name.body rgnsource.name
 #	paste $^ > $@
 rgnsource.name:ucs-all.ids
