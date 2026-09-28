@@ -1,6 +1,7 @@
-include ../config/config.mk
+config_dir=../config
+include $(config_dir)/config.mk
 #Download files relating Variation Sequences
-FILES := StandardizedVariants.txt AJ1-IVS-cleaned.txt IVD_Sequences.txt
+FILES := StandardizedVariants.txt AJ1-IVS-cleaned.txt Adobe-Japan1_sequences.txt IVD_Sequences.txt
 all:$(FILES)
 StandardizedVariants.txt:
 	wget https://www.unicode.org/Public/$(UNICODE_VERSION)/ucd/StandardizedVariants.txt

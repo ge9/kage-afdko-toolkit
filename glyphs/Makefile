@@ -3,7 +3,7 @@ AJ1_dir=../AJ1
 config_dir=../config
 GlyphWiki_dir=../glyphwiki
 include $(config_dir)/config.mk
-NS := ucs-all ucs-main ucs-ivsbase ucs-svsbase ucs-mj ucs-hanyo ucs-SHSans aj1kanji aj1kanji-new ivs-other irg2021 irg2024 irg2015 irg2017 rgnsource
+NS := ucs-sub ucs-main ucs-ivsbase ucs-svsbase ucs-mj ucs-hanyo ucs-SHSans aj1kanji aj1kanji-new ivs-other svs-other irg2021 irg2024 irg2015 irg2017 rgnsource
 NAMES := $(addsuffix .name,$(NS))
 BODIES := $(addsuffix .body,$(NAMES))
 #https://glyphwiki.org/wiki/GlyphWiki:prefix に従った各バリエーションへの対応
@@ -14,9 +14,9 @@ all:all.parts-list 99-extB-F.glyphs kanjisample.glyphs kanjidebug.glyphs #bugs.g
 
 %.parts-list: %.glyphs
 	node ../js/make-cache.js $^ $@
-kanjisample.glyphs:70-ucs-all.glyphs
+kanjisample.glyphs:70-ucs-sub.glyphs
 	grep -f $(config_dir)/kanjisample.grep $^ > $@
-bugs.glyphs:70-ucs-all.glyphs
+bugs.glyphs:70-ucs-sub.glyphs
 	grep -f $(config_dir)/bugs.grep $^ > $@
 kanjidebug.glyphs:
 	cp $(config_dir)/kanjidebug.glyphs $@
@@ -48,19 +48,20 @@ rgnsource.list:rgnsource.name.body
 	./checkerror.sh $@
 #rgnsource.list:rgnsource.name.body rgnsource.name
 #	paste $^ > $@
-rgnsource.name:ucs-all.ids
+# TODO: filter only CJK Unified Ideographs
+rgnsource.name:ucs-main.ids ucs-sub.ids
 # 空にする
 # support CRLF by `\r?$$`
 	cat /dev/null > $@
 	list='$(RGN_SOURCES)'; for rgnsrc in $$list; do \
-	cat ucs-all.name | sed "s/\r\{0,1\}$$/!$$rgnsrc/" >> $@ || exit 1;\
+	cat ucs-main.name ucs-sub.name | sed "s/\r\{0,1\}$$/!$$rgnsrc/" >> $@ || exit 1;\
 	done
 
 # 各.nameから個別に生成しても構わないが、一度に生成したほうが効率がいい
 $(BODIES): $(NAMES)
 	node ../js/make-body.js $^
-ucs-all.ids:
-	python make-ucs-list.py $(config_dir)/ucs-all.range > $@
+ucs-sub.ids:
+	python make-ucs-list.py $(config_dir)/ucs-sub.range > $@
 ucs-main.ids:
 	python make-ucs-list.py $(config_dir)/ucs-main.range > $@
 ucs-svsbase.ids:
@@ -85,7 +86,7 @@ ucs-SHSans.ids:
 	./checkerror.sh $@
 #make glyphs files
 #extB-extF and extI. 互換漢字補助は除く
-99-extB-F.glyphs:70-ucs-all.glyphs
+99-extB-F.glyphs:70-ucs-sub.glyphs
 	cat $^ | grep -E "<2[0-9A-E]...>" > $@
 all.glyphs:85-aj1.glyphs rgnsource.list
 	python add-glyph.py $^ > $@
@@ -97,9 +98,9 @@ all.glyphs:85-aj1.glyphs rgnsource.list
 	python add-glyph.py $^ > $@
 81-irg2024.glyphs:80-irg2021.glyphs irg2024.list
 	python add-glyph.py $^ > $@
-80-irg2021.glyphs:70-ucs-all.glyphs irg2021.list
+80-irg2021.glyphs:70-ucs-sub.glyphs irg2021.list
 	python add-glyph.py $^ > $@
-70-ucs-all.glyphs:60-ucs-hanyo.glyphs ucs-all.ucslist
+70-ucs-sub.glyphs:60-ucs-hanyo.glyphs ucs-sub.ucslist
 	python add-glyph.py $^ > $@
 60-ucs-hanyo.glyphs:55-ucs-mj.glyphs ucs-hanyo.ucslist
 	python add-glyph.py $^ > $@
@@ -107,7 +108,9 @@ all.glyphs:85-aj1.glyphs rgnsource.list
 	python add-glyph.py $^ > $@
 45-ucs-SHSans.glyphs:40-ucs-ivsbase.glyphs ucs-SHSans.ucslist
 	python add-glyph.py $^ > $@
-40-ucs-ivsbase.glyphs:35-ucs-svsbase.glyphs ucs-ivsbase.ucslist
+40-ucs-ivsbase.glyphs:36-other-svs.glyphs ucs-ivsbase.ucslist
+	python add-glyph.py $^ > $@
+36-other-svs.glyphs:35-ucs-svsbase.glyphs svs-other.ucslist
 	python add-glyph.py $^ > $@
 35-ucs-svsbase.glyphs:33-add-svs.glyphs ucs-svsbase.ucslist
 	python add-glyph.py $^ > $@
@@ -116,7 +119,7 @@ all.glyphs:85-aj1.glyphs rgnsource.list
 	python add-svs.py $^ > $@
 30-ucs-main.glyphs:20-other-ivs.glyphs ucs-main.ucslist
 	python add-glyph.py $^ > $@
-20-other-ivs.glyphs:05-aj1kanji.glyphs ivs-other.list
+20-other-ivs.glyphs:05-aj1kanji.glyphs ivs-other.ucslist
 	python add-glyph.py $^ > $@
 05-aj1kanji.glyphs:aj1kanji-new.list
 	python make-aj1.py $^ $(VS_dir)/Adobe-Japan1_sequences.txt > $@
@@ -137,14 +140,21 @@ aj1kanji.list:aj1kanji.name.body
 aj1kanji.name:
 	cat ../AJ1/kanji-name-list > $@
 	echo aj1-12869 >> $@
-ivs-other.list:ivs-other.name.body ivs-other.ids
-	paste ivs-other.name.body ivs-other.ids > $@
-	./checkerror.sh $@
+# ivs-other.list:ivs-other.name.body ivs-other.ids
+# 	paste ivs-other.name.body ivs-other.ids > $@
+# 	./checkerror.sh $@
 #"uniq" required for shared IVSes
 ivs-other.ids:
 	cat $(VS_dir)/IVD_Sequences.txt | grep -v '#' | grep -v 'Adobe-Japan1;' | cut -f 1 -d ";" | uniq > $@
 ivs-other.name:ivs-other.ids
-	cat $^ | sed 's/^/u/' | sed 's/ /-u/' | tr '[:upper:]' '[:lower:]' > ivs-other.name
+	cat $^ | sed 's/^/u/' | sed 's/ /-u/' | tr '[:upper:]' '[:lower:]' > $@
+
+#currently, only CJK strokes
+svs-other.ids: $(VS_dir)/StandardizedVariants.txt
+	cat $^ | grep "CJK STROKE" | cut -f 1 -d ";" > $@
+svs-other.name:svs-other.ids
+	cat $^ | sed 's/^/u/' | sed 's/ /-u/' | tr '[:upper:]' '[:lower:]' > $@
+
 clean:
 	rm -f *.glyphs *.name *.list *.body *.ids *.parts-list aj1kanji.cids
 #cat $(VS_dir)/IVD_Sequences.txt | grep -v '#' | grep -v 'Adobe-Japan1;' | cut -f 1 -d ";" | sed 's/^/u/' | sed 's/ /-u/' | tr '[:upper:]' '[:lower:]' > $@

@@ -14,11 +14,13 @@ ifneq ($(OS),Windows_NT)
 endif
 GWV=gwv
 
-UNICODE_VERSION = 17.0.0
-#最新は17.0.0
+NZM_FONT_VER = 0.012
+
+UNICODE_VERSION = 18.0.0
+#最新は18.0.0
 #最新の花園は10.0.0、Jigmo（字雲）フォントは17.0.0
 
-IVD_VERSION = 2025-07-14
+IVD_VERSION = 2026-08-03
 #最新の花園は2016-08-15、Jigmo（字雲）フォントは2025-07-14
 
 PREFER_SOURCE = 

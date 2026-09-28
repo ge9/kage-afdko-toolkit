@@ -10,13 +10,21 @@ export class Buhin_subst {
     //名前とバージョンを受け取り、KAGEデータを返す。
     //該当グリフ・バージョンが存在しない（あるいは白紙化されている）場合はundefinedを返すが、グリフ自体が存在することがわかっている場合はfalseを返してもよい。
     this.get_info_ver = function(name, ver){
-      if(name.startsWith("gw:")) return get_info_ver_gw(name.substring(3), ver)
+      if(name.startsWith("gw2+")) {
+        return add_gw2(get_info_ver_gw(name.substring(4), ver))
+      }
+      if(name.startsWith("gw+")) return get_info_ver_gw(name.substring(3), ver)
       return get_info_ver(name, ver)
     }
     //バージョン指定（@）無しの引数を受け取り、KAGEデータと最新バージョン番号を返す。
     //グリフ自体が存在しない場合はundefinedを返す。
     this.get_info_without_ver = function(name){
-      if(name.startsWith("gw:")) return get_info_without_ver_gw(name.substring(3))
+      if(name.startsWith("gw2+")){
+        let temp = get_info_without_ver_gw(name.substring(4))
+        temp.data = add_gw2(temp.data)
+        return temp
+      }
+      if(name.startsWith("gw+")) return get_info_without_ver_gw(name.substring(3))
       return get_info_without_ver(name)
     }
   }
@@ -71,7 +79,7 @@ export class Buhin_subst {
         //指定がなければ最新バージョンと見なす
         if (!verstr) {
           const inf = this.get_info_without_ver(temp[0])
-          if (!inf) throw "[[ERROR]]: search: tried to substitute a nonexistent glyph without specifying version: " + temp[0]
+          if (!inf) throw "[[ERROR]]: search: tried to substitute a nonexistent glyph without specifying version: " + name
           verstr = inf.version
         }
         //バージョン指定を満たすか判定
@@ -139,7 +147,7 @@ function req_gw(name) {
   );
   return JSON.parse(response.body)
 }
-//GlyphWiki用のみ"gw:"指定で使うので別で定義
+//GlyphWiki用のみ"gw+"指定で使うので別で定義
 function get_info_ver_gw(name, ver) {
   const res = req_gw(name + "@" + ver)
   if (!res.data) return undefined;
@@ -150,6 +158,10 @@ function get_info_without_ver_gw(name) {
   const res = req_gw(name)
   if (!res.data) return undefined;
   return { version: res.version, data: res.data }
+}
+
+function add_gw2(data){
+  return data.split("$").map((t) => {let t0 = t.split(":"); if (t0[0]=="99") {t0[7]="gw2+"+t0[7]}; return t0.join(":")}).join("$")
 }
 
 //以下、異なるソースを使用する3つのバリエーションを定義

@@ -36,6 +36,7 @@ These are included in this repository as git submodules.
 次にmakefontフォルダに移動し、makefont.shを実行する。これにより、AFDKOを用いてotfフォントが生成される。
 次にmakettfフォルダに移動し、makettf.shを実行する。これにより、ヒント/ヒント命令付きのTrueTypeフォントが生成される。
 GlyphWikiダンプを更新したいときはトップディレクトリなどでmake cleanをしてからやり直せばよい。
+UnicodeやIVDを更新するときはmake cleanallをしてからやり直す。
 
 # カスタム部品や不正データの管理について
 KAGEエンジンが提供する通常のストロークでは綺麗に表現するのが難しいグリフも存在する。そこで、エディタ上での編集ではなくKAGEデータを直接変更して通常許容されない形状を実現することが慣用的に行われている。また、謎乃明朝では自作エンジン（kage-engine-2）で追加した独自形式のグリフを使用している場合もある。
@@ -65,7 +66,7 @@ nameはグリフ名（u4e00など）、versionはバージョン番号、is_late
 kage.sqlite3には最新版の白紙化データも含まれ、それらはkageが"0:0:0:0"に設定されている。
 これにより、kage.sqlite3を見ただけで、最新バージョンの番号およびそれが白紙化されているかどうかがただちにわかる。
 最新バージョン以外の白紙化データについては追加していない（つまり、バージョン番号に抜けがある場合がある）。
-また、turgenev（自分）以外のユーザー占有グリフも除外している。
+また、turgenev（自分）以外のユーザー占有グリフも除外されるが、その例外設定としてconfigのallowed-user-glyphs.grepが利用できる。
 
 # glyphs
 フォントの内容を決定する*.glyphsファイルを生成する重要なフォルダ。
@@ -102,6 +103,8 @@ AJ1関連ファイルが格納されている。CMapはUniJIS2004-UTF32-*がダ�
 グリフの選定に関する設定など、小規模なファイルを入れておくところ。
 ## kanjisample.grep
 このファイルを用いてgrep -fをすることで謎乃明朝のサンプルフォント用の.glyphsを生成している。
+## allowed-user-glyphs.grep
+通常、（turgenev所有以外の）ユーザー占有グリフはGlyphWikiのdumpから除外されるが、その例外となる条件をここに記述する。
 ## config.mk
 フォント生成に関するグローバルな設定を保管する。
 PREFER_SOURCE…!jや!j!などと設定するとUCSコードポイントとしてそれらの地域ソースのグリフを優先的に使用する。!jの場合はuXXXX-jが存在する場合のみ、!j!の場合はuXXXX-jvがある場合にもそれが使用される。これにより各地域対応のフォントをビルドすることができる。buhin-subst.jsの説明も参照。
@@ -109,8 +112,9 @@ PREFER_SOURCE…!jや!j!などと設定するとUCSコードポイントとし�
 ucs-all.rangeでUnicodeの全グリフを指定
 ucs-main.rangeで謎乃明朝（"+"ではない方）に入れるグリフを指定
 ## GlyphWikiのグリフの置換指定・バージョン検査用ファイル
-置換先指定に関しては、"gw:u4e00@3"などと"gw:"を付けて指定すると、glyphwikiフォルダのDBからではなくGlyphWikiのサイトから（最新の）データを取得する。
-これは部品取得システム内で実装しているので、.glyphsファイルでも有効（"gw/gw:u4e00@3"のように書くことになる）。
+置換先指定に関しては、"gw+u4e00@3"などと"gw+"を付けて指定すると、glyphwikiフォルダのDBからではなくGlyphWikiのサイトから（最新の）データを取得する。
+これは部品取得システム内で実装しているので、.glyphsファイルでも有効（"gw/gw+u4e00@3"のように書くことになる）。
+"gw2+u5b57"などと"gw2+"を付けて指定すると、同様にGlyphWikiを使用するが、それに含まれる部品にも全て再帰的にgw2を指定した扱いとなる。
 ### force_version.conf
 u5000>=4のような書式で部品の最低バージョンを指定する。違反してもフォント生成に支障はないが、verify-versionのところで「ERROR: illegal old version glyph: u5000@1」のような警告が表示される。単にu5000と書いた場合は最新版のみ許容される。主に、不正データではないものの望ましくないデザインが含まれたバージョンを除外するために使用する。
 - 基本的には明示的にバージョンを指定するのが望ましい。最新版指定はテスト時には便利だが、該当グリフが更新されるたびにエラーが発生する。
@@ -154,7 +158,7 @@ make-font.js [INPUT(.glyphs)] [OUTPUT_PATH(.svg or directory)] [weight]
 ```
 KAGEエンジンを使用してsvgデータを生成するメインのスクリプト。
 weightのところは全て大文字で指定する。CLASSICとすると従来のKAGEエンジン（kurgm氏のもの）、LIGHT, REGULARなどその他の値では自作エンジンが使われる。
-CLASSICの場合はカスタム部品は使用しない。
+CLASSICの場合はカスタム部品を使用しない。
 また、CLASSICの場合はClipper（本家の花園明朝でも使われている）（正確にはNode.js用のjs-angusj-clipper）を使ってパスを結合（union）した上で、OUTPUT_PATHに直接svgの内容（ヘッダなどは除く）が追記される。それ以外の場合はパスの結合はせず（clipperは曲線には非対応）、OUTPUT_PATHにディレクトリが作られてそこにグリフ1文字ごとに別々のsvgファイルが生成される。この際、単一のフォルダにファイルが増えすぎるとI/Oパフォーマンスが落ちるため、md5ハッシュを計算してフォルダを分けている。
 特に自作エンジンを使用する場合、曲線近似などの計算量が多いため、数万グリフ程度を出力するために数十分程度かかる。
 ## normalize-svg-font.js
@@ -173,6 +177,11 @@ glyphwiki上でのグリフの整合性を検証する。最終的な生成物�
 make-font.jsを使ってSVGフォントを生成する。makesvg.shを実行すればよい。
 CLASSICの場合はmake-font.jsの出力がそのまま最終的な出力になる。それ以外では、inkscapeでパスの結合（union）、fontforgeで単純化が行われる。Inkscapeの1.2以降では https://gitlab.com/inkscape/inbox/-/issues/6903 に書いてあるようなエラーメッセージが出続けるバグ（？）がある。
 CLASSICの場合は数万グリフあたり数十分-1時間程度、それ以外の場合は1時間-数時間程度かかる。
+この時点で
+```
+tx -pdf Medium.kanjidebug.final.svg > debug.pdf
+```
+などとすれば字形を確認できる。
 
 # makefont
 AFDKOを使ってフォントをビルドする。makefont.shを実行すればよい。

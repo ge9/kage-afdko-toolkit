@@ -1,9 +1,15 @@
 cd `dirname $0`
-export NZM_FONT_VER=0.011
+if ! makeotf -h > /dev/null 2>&1; then
+    echo ERROR: \"makeotf -h\" failed. AFDKO missing?
+    exit 1
+fi
+# test make a font to build common files
+make fontdebug-Classic.otf
 for weightstr in Light Regular Medium Classic #DemiBold
 do
-./fileenv ./45Nazo.env env NZM_WEIGHT_STR=$weightstr make NazoMin-$weightstr.otf
-./fileenv ./99Nazo.env env NZM_WEIGHT_STR=$weightstr make NazoMin+-$weightstr.otf
-./fileenv ./kanjisample.env env NZM_WEIGHT_STR=$weightstr make fontsample-$weightstr.otf
-./fileenv ./kanjidebug.env env NZM_WEIGHT_STR=$weightstr make fontdebug-$weightstr.otf
+make NazoMin-$weightstr.otf &
+make NazoMin+-$weightstr.otf &
+make fontsample-$weightstr.otf &
+make fontdebug-$weightstr.otf &
 done
+wait

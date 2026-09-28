@@ -1,7 +1,9 @@
+
+config_dir=../config
 all:kage.sqlite3
 %.csv:
 	make $*.txt
-	cat $*.txt | grep -e "^ turgenev_" -e "^ [^@_]*\\@.*" | sed -n 's/\\@/,/p' | sed -e 's/ *| /,0,/;s/ *| /,/' | sed -e 's/^ //' > $@
+	cat $*.txt | grep -f $(config_dir)/allowed-user-glyphs.grep -e "^ turgenev_" -e "^ [^@_]*\\@.*" | sed -n 's/\\@/,/p' | sed -e 's/ *| /,0,/;s/ *| /,/' | sed -e 's/^ //' > $@
 	rm $*.txt
 kage.sqlite3:
 	make dump_all_versions.csv dump_newest_only.txt
